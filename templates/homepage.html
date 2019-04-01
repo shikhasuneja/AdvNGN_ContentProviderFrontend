@@ -6,7 +6,10 @@
 </head>
 <body>
 <div class="app-title"> <h1>Next-gen Web Services [NWS] Homepage<h1>
-<h1>Webpage-on-demand Service: Create a webpage with just the push of a button!</h1></div>
+<h1>Webpage-on-demand Service: Create a webpage with just a few clicks!</h1></div>
+{% if error %}
+<br><div class="app-title"><h2>{{error}}<h2></div><br>
+{% endif %}
 <form action="/homepage" method="POST">
 <div class="login">
 <div class="login-screen">

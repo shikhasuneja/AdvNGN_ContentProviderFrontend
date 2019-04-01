@@ -6,16 +6,18 @@
 </head>
 <body>
 <div class="app-title"> <h1>Next-gen Web Services [NWS]<h1>
-<h1>Welcome to NWS User Portal</h1>
+{% if username %}
+<div class="app-title"><h1>Welcome to NWS User Portal, {{username}}!</h1></div>
+{% endif %}
 <h1>Create or manage your webpage</h1>
 </div>
 <div class="login">
 <br><br>
 <br><br>
-<a href = "/create_webpage"><button class="btn btn-primary btn-large btn-block">Create a webpage!</button></a>
+<a href = "/create_webpage/{{username}}"><button class="btn btn-primary btn-large btn-block">Create a webpage!</button></a>
 <br><br>
 <br><br>
-<a href = "/modify_webpage"><button class="btn btn-primary btn-large btn-block">Modify an existing a webpage</button></a>
+<a href = "/modify_webpage/{{username}}"><button class="btn btn-primary btn-large btn-block">Modify an existing a webpage</button></a>
 <br><br>
 </div>
 </body>

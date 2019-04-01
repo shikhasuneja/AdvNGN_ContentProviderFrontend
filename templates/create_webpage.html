@@ -5,9 +5,8 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 </head>
 <body>
-<form action="/create_webpage.html" method="post">
-<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1></div>
-<h1>Create a new webpage!</h1>
+<form action="/create_webpage/{{username}}" method="post">
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Create a new webpage!</h1></div>
 <div class="login-screen">
 <div class="app-title"><h1>Enter Webpage Details</h1></div>
 <div class="login-form">
@@ -15,7 +14,7 @@
 <div class="app-title"><h1>Redundancy Requirements</h1>
 <div class="control-group">Number of Replicas: <input type="text" name="replicas" class="login-field"></div>
 <div class="control-group">Server Selection:
-<select>
+<select name="server_selection">
 <option value="aa_same">Active-Active (Same Physical Server)</option>
 <option value="aa_diff">Active-Active (Different Physical Servers)</option>
 <option value="ab_same">Active-Backup (Same Physical Server)</option>
