@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>Next-gen Web Services [NWS]</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+<body>
+<form action="/modify_webpage/{{username}}" method="post" enctype="multipart/form-data">
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
+<div class="login-screen">
+<div class="app-title"><h1>Enter Webpage Details</h1></div>
+<div class="login-form">
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
+<a href = "/add_users/{{username}}"><button class="btn btn-primary btn-large btn-block">Add users</button></a><br><br>
+<a href = "/remove_users/{{username}}"><button class="btn btn-primary btn-large btn-block">Remove users</button></a><br>
+<br><h1>----------------- OR -----------------</h1><br>
+<div class="control-group">Upload a new "index.html" file for the webpage:<input type="file" name="file" accept="html"></div><br>
+</div>
+<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div></div>
+</form>
+</body>
+</html>

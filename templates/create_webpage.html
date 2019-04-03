@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 </head>
 <body>
-<form action="/create_webpage/{{username}}" method="post">
+<form action="/create_webpage/{{username}}" method="post" enctype="multipart/form-data">
 <div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Create a new webpage!</h1></div>
 <div class="login-screen">
 <div class="app-title"><h1>Enter Webpage Details</h1></div>
@@ -21,7 +21,7 @@
 <option value="ab_diff">Active-Backup (Different Physical Servers)</option>
 </select>
 </div>
-<div class="control-group">Upload an "index.html" file for the webpage:<input type="file" id="index" name="index" accept="html"></div>
+<div class="control-group">Upload an "index.html" file for the webpage:<input type="file" name="file" accept="html"></div>
 </div> <input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div>
 </div>
 </form>

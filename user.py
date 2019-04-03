@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import ast
+from werkzeug import secure_filename
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = "nws_customers.json"
@@ -61,7 +62,7 @@ class UserAccount():
 
 class UserPage():
 
-    def __init__(self, url, admin_user, redundancy):
+    def __init__(self, url, admin_user, index_file, redundancy):
         self.url = url
         self.admin = admin_user
         self.url_folder = NWS_CUSTOMER_PAGES_DIR + "/" + self.url
@@ -71,12 +72,14 @@ class UserPage():
         self.index_files_folder = self.url_folder + "/" + "files"
         self.website_version_file = self.index_files_folder + "/" + "webpage_version.json"
         self.redundancy_reqs = redundancy
+        self.index_file = index_file
 
     def create(self):
         self._create_folders_and_files()
         self._save_admin_details()
         self._save_redundancy_requirements()
         self._save_current_user_details()
+        self._save_index_file()
 
     def _create_folders_and_files(self):
         folders = [NWS_CUSTOMER_PAGES_DIR, self.url_folder, self.index_files_folder]
@@ -107,3 +110,16 @@ class UserPage():
     def _save_current_user_details(self):
         user = UserAccount(self.admin, None, None)
         user_details = user.find_details()
+        details = {"username": self.admin, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
+        with open(self.website_version_file, 'w') as outfile:
+            outfile.write(json.dumps(details))
+
+    def _save_index_file(self):
+        filepath = self.index_files_folder + "index_v1.html"
+        self.index_file.save(secure_filename(filepath))
+        self._save_intial_version_info()
+
+    def _save_intial_version_info(self):
+        version_info = {"url": self.url, "requested_version": 1, "latest_version": 1}
+        with open(self.website_version_file, 'w') as outfile:
+            outfile.write(json.dumps(version_info))

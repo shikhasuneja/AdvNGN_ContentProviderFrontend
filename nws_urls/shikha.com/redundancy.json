@@ -1,1 +1,1 @@
-{"url": "shikha.com", "replicas": "6", "selection": "Active_Backup", "server_type": "different"}
+{"url": "shikha.com", "replicas": "10", "selection": "Active_Backup", "server_type": "different"}

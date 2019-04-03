@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 import logging
 from user import UserAccount, UserPage
-from werkzeug import secure_filename
 
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
@@ -25,7 +24,7 @@ def homepage():
         elif request.form['newusername'] and request.form['newemail'] and request.form['newpassword']:
             user = UserAccount(request.form['newusername'], request.form['newemail'], request.form['newpassword'])
             if user.create_account():
-                return redirect(url_for('user_session'), username = request.form['newusername'])
+                return redirect(url_for('user_session', username = request.form['newusername']))
             else:
                 error = "User is already registered, please sign in!"
     return render_template('homepage.html', error = error)
@@ -44,16 +43,21 @@ def user_session(username):
 @app.route('/create_webpage/<username>', methods=['GET', 'POST'])
 def create_webpage(username):
     if request.method == 'POST':
-        logging.info(request.form['url'])
-        logging.info(request.form['replicas'])
-        logging.info(request.form['server_selection'])
-        logging.info(request.form)
-        logging.info(request.form['index'])
-        page = UserPage(request.form['url'], username, redundancy = {'replicas' : request.form['replicas'], 'server_selection': request.form['server_selection']})
+        page = UserPage(request.form['url'], username, request.files['file'],
+        redundancy = {'replicas' : request.form['replicas'],
+        'server_selection': request.form['server_selection']})
         page.create()
-        #f = request.files['index']
-        #f.save(secure_filename(f.filename))
     return render_template('create_webpage.html', username = username)
+
+
+@app.route('/modify_webpage/<username>', methods=['GET', 'POST'])
+def modify_webpage(username):
+    """if request.method == 'POST':
+        page = UserPage(request.form['url'], username, request.files['file'],
+        redundancy = {'replicas' : request.form['replicas'],
+        'server_selection': request.form['server_selection']})
+        page.create()"""
+    return render_template('modify_webpage.html', username = username)
 
 
 if __name__ == '__main__':
