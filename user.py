@@ -115,9 +115,9 @@ class UserPage():
             outfile.write(json.dumps(details))
 
     def _save_index_file(self):
-        filepath = self.index_files_folder + "index_v1.html"
-        self.index_file.save(secure_filename(filepath))
         self._save_intial_version_info()
+        os.chdir(self.index_files_folder)
+        self.index_file.save(secure_filename("index_v1.html"))
 
     def _save_intial_version_info(self):
         version_info = {"url": self.url, "requested_version": 1, "latest_version": 1}
