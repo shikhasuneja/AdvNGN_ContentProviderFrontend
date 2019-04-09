@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = "nws_customers.json"
-NWS_CUSTOMER_PAGES_DIR = "nws_urls"
+NWS_CUSTOMER_PAGES_DIR = "/nws_urls"
 
 class UserAccount():
 
@@ -62,9 +62,9 @@ class UserAccount():
 
 class UserPage():
 
-    def __init__(self, url, admin_user, index_file, redundancy):
+    def __init__(self, url, user, index_file, redundancy):
         self.url = url
-        self.admin = admin_user
+        self.user = user
         self.url_folder = NWS_CUSTOMER_PAGES_DIR + "/" + self.url
         self.users_file = self.url_folder + "/" + "users.json"
         self.curr_user_file = self.url_folder + "/" + "current_user.json"
@@ -76,7 +76,7 @@ class UserPage():
 
     def create(self):
         self._create_folders_and_files()
-        self._save_admin_details()
+        self._save_user_details()
         self._save_redundancy_requirements()
         self._save_current_user_details()
         self._save_index_file()
@@ -91,12 +91,13 @@ class UserPage():
             if not os.path.exists(file):
                 open(file, 'a').close()
 
-    def _save_admin_details(self):
-        user = UserAccount(self.admin, None, None)
+    def _save_user_details(self):
+        user = UserAccount(self.user, None, None)
         user_details = user.find_details()
-        admin_details = {"username": self.admin, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
+        admin_details = {"username": self.user, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
         with open(self.users_file, 'w') as outfile:
             outfile.write(json.dumps(admin_details))
+        self._save_current_user_details()
 
     def _save_redundancy_requirements(self):
         selection_dict = {'aa': "Active_Active", "ab": "Active_Backup"}
@@ -108,14 +109,16 @@ class UserPage():
             outfile.write(json.dumps(reqs))
 
     def _save_current_user_details(self):
-        user = UserAccount(self.admin, None, None)
+        user = UserAccount(self.user, None, None)
         user_details = user.find_details()
-        details = {"username": self.admin, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
-        with open(self.website_version_file, 'w') as outfile:
+        details = {"username": self.user, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
+        with open(self.curr_user_file, 'w') as outfile:
             outfile.write(json.dumps(details))
 
     def _save_index_file(self):
         self._save_intial_version_info()
+        os.chdir(self.url_folder)
+        self.index_file.save(secure_filename("index.html"))
         os.chdir(self.index_files_folder)
         self.index_file.save(secure_filename("index_v1.html"))
 
