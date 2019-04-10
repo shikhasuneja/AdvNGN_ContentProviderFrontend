@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = "nws_customers.json"
-NWS_CUSTOMER_PAGES_DIR = "/nws_urls"
+NWS_CUSTOMER_PAGES_DIR = os.getcwd() + "/nws_urls"
 
 class UserAccount():
 

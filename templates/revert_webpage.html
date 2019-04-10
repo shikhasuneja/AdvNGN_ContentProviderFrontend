@@ -1,0 +1,30 @@
+<html>
+<head>
+<title>Next-gen Web Services [NWS]</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+<body>
+<form action="/revert_webpage/{{username}}" method="post" enctype="multipart/form-data">
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
+<div class="login-screen">
+<div class="app-title"><h1>Revert to an old version of the webpage</h1></div>
+{% if reverted %}
+<div class="app-title"><h2>Webpage reverted successfully!</h2></div>
+{% endif %}
+<div class="login-form">
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div>
+{% if files %}
+<div class="control-group">Revert to version:
+<select name="version_selection">
+{% for file in files%}
+<option value={{file}}>{{file}}</option>
+{% endfor %}
+{% endif %}
+</select>
+<br>
+</div>
+</div> <input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div>
+</form>
+</body>
+</html>

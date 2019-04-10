@@ -5,17 +5,11 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 </head>
 <body>
-<form action="/modify_webpage/{{username}}" method="post" enctype="multipart/form-data">
 <div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage</h1></div>
 <div class="login-screen">
-<div class="app-title"><h1>Enter Webpage Details</h1></div>
-<div class="login-form">
-<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
-<a href = "/user_management/{{url}}/{{username}}/"><button class="btn btn-primary btn-large btn-block">User Management - Add or Remove Users</button></a><br><br>
-<a href = "/upload_newindex/{{url}}/{{username}}"><button class="btn btn-primary btn-large btn-block">Upload a new "index.html" file for the webpage</button></a><br>
-<a href = "/revert_webpage/{{url}}/{{username}}/"><button class="btn btn-primary btn-large btn-block">Revert to a previous version of the webpage</button></a><br><br>
-</div>
-<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div></div>
-</form>
+<div class="app-title"><h1>Select from the following modification options</h1></div>
+<a href = "/user_management/{{username}}"><button class="btn btn-primary btn-large btn-block">User Management - Add or Remove Users</button></a><br><br>
+<a href = "/upload_newindex/{{username}}"><button class="btn btn-primary btn-large btn-block">Upload a new "index.html" file for the webpage</button></a><br>
+<a href = "/revert_webpage/{{username}}"><button class="btn btn-primary btn-large btn-block">Revert to a previous version of the webpage</button></a><br><br>
 </body>
 </html>
