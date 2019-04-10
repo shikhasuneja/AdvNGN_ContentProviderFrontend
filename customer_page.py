@@ -72,6 +72,6 @@ class WebPage():
             data = infile.read()
         logging.info(ast.literal_eval(data))
         version_info = ast.literal_eval(data)
-        version_info["requested_version"] = version
+        version_info["requested_version"] = version.split(".")[0].split("_v")[-1]
         with open(self.website_version_file, 'w') as outfile:
             outfile.write(json.dumps(version_info))
