@@ -4,11 +4,13 @@ import logging
 import ast
 from werkzeug import secure_filename
 from shutil import copyfile
+from populatedb_api import populate_db
 
 logging.basicConfig(level=logging.INFO)
-NWS_CUSTOMERS_FILE = "nws_customers.json"
+NWS_CUSTOMERS_FILE = os.getcwd() + "/nws_customers.json"
 NWS_CUSTOMER_PAGES_DIR = os.getcwd() + "/nws_urls"
 MODIFICATION_REASON = {0: "user_modification", 1: "new_upload", 2: "revert_request"}
+populate_object = populate_db()
 
 class WebPage():
 
@@ -30,6 +32,7 @@ class WebPage():
             logging.info("New \"index.html\" file is uploaded!")
             current_count = self._get_index_files_count()
             self._save_new_index_file(current_count + 1)
+            self._populate_db_with_new_file(user_details, current_count + 1)
         elif MODIFICATION_REASON[flag] == "user_modification":
             logging.info("User modification")
             logging.info(user_details)
@@ -38,6 +41,7 @@ class WebPage():
             logging.info("Revert Request")
             logging.info(requested_version)
             self._revert_to_specific_version(requested_version)
+            self._populate_db_with_version_info(info)
 
     def _save_version_info(self, version):
         version_info = {"url": self.url, "requested_version": version, "latest_version": version}
@@ -94,6 +98,7 @@ class WebPage():
         with open(self.users_file, 'w') as outfile:
             outfile.write(json.dumps(users))
         self._save_user_info_in_customers_db(info)
+        self._populate_db_with_user_info(info)
 
     def _save_user_info_in_customers_db(self, info):
         logging.info(info)
@@ -104,3 +109,12 @@ class WebPage():
         data[info['email']] = {"username": info['username'], "email": info['email'], "password": info['password'], "url": self.url, "role": info['role'], "created": "False"}
         with open(NWS_CUSTOMERS_FILE, 'w') as outfile:
             outfile.write(json.dumps(data))
+
+    def _populate_db_with_user_info(self, info):
+        populate_object.api_account_users(info['email'], info['username'])
+
+    def _populate_db_with_new_file(self, info, file):
+        populate_object.api_cp_content(info['email'], file)
+
+    def _populate_db_with_version_info(self, info):
+        populate_object.api_version(info['email'])

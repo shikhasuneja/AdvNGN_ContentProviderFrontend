@@ -4,10 +4,12 @@ import logging
 import ast
 from werkzeug import secure_filename
 from populatedb_api import populate_db
+from shutil import copyfile
 
 logging.basicConfig(level=logging.INFO)
-NWS_CUSTOMERS_FILE = "nws_customers.json"
+NWS_CUSTOMERS_FILE = os.getcwd() + "/nws_customers.json"
 NWS_CUSTOMER_PAGES_DIR = os.getcwd() + "/nws_urls"
+populate_object = populate_db()
 
 class UserAccount():
 
@@ -41,13 +43,17 @@ class UserAccount():
 
     def authenticate(self):
         data = {}
-        credentials = {self.email: {'username': self.username, 'email': self.email, 'password': self.password}}
+        logging.info(self.email)
+        creds = {self.email: {'username': self.username, 'email': self.email, 'password': self.password}}
         with open(NWS_CUSTOMERS_FILE, 'r') as infile:
             data = infile.read()
-        logging.info(list(ast.literal_eval(data).items()))
-        if data:
-            if self.email in ast.literal_eval(data).keys():
-                if ast.literal_eval(data)[self.email] == credentials[self.email]:
+        logging.info(ast.literal_eval(data).items())
+        logging.info(ast.literal_eval(data).keys())
+        user_data = ast.literal_eval(data)
+        if user_data:
+            if self.email in user_data.keys():
+                logging.info(user_data[self.email])
+                if user_data[self.email]['username'] == creds[self.email]['username'] and user_data[self.email]['email'] == creds[self.email]['email'] and user_data[self.email]['password'] == creds[self.email]['password']:
                     return True
         return False
 
@@ -123,8 +129,7 @@ class UserPage():
         self._save_intial_version_info()
         os.chdir(self.url_folder)
         self.index_file.save(secure_filename("index.html"))
-        os.chdir(self.index_files_folder)
-        self.index_file.save(secure_filename("index_v1.html"))
+        copyfile("index.html", self.index_files_folder + "/index_v1.html")
 
     def _save_intial_version_info(self):
         version_info = {"url": self.url, "requested_version": 1, "latest_version": 1}
@@ -143,7 +148,9 @@ class UserPage():
             outfile.write(json.dumps(data))
 
     def _populate_db(self):
-        pb = populate_db()
         user = UserAccount(self.user, None, None)
         user_details = user.find_details()
-        pb.api_account(user_details['email'])
+        populate_object.api_account(user_details['email'])
+        populate_object.api_account_users(user_details['email'], self.user)
+        populate_object.api_cp_content(user_details['email'], "index_v1.html")
+        populate_object.api_version(user_details['email'])
