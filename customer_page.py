@@ -23,7 +23,7 @@ class WebPage():
         self.website_version_file = self.index_files_folder + "/" + "webpage_version.json"
         self.index_file = index_file
 
-    def modify(self, flag, requested_version = None):
+    def modify(self, flag, requested_version = None, user_details = {}):
         logging.info("Modifying the customer webpage")
         logging.info(MODIFICATION_REASON[flag])
         if MODIFICATION_REASON[flag] == "new_upload":
@@ -32,6 +32,8 @@ class WebPage():
             self._save_new_index_file(current_count + 1)
         elif MODIFICATION_REASON[flag] == "user_modification":
             logging.info("User modification")
+            logging.info(user_details)
+            self._save_user_details(user_details)
         elif MODIFICATION_REASON[flag] == "revert_request":
             logging.info("Revert Request")
             logging.info(requested_version)
@@ -75,3 +77,30 @@ class WebPage():
         version_info["requested_version"] = version.split(".")[0].split("_v")[-1]
         with open(self.website_version_file, 'w') as outfile:
             outfile.write(json.dumps(version_info))
+
+    def get_users(self):
+        logging.info("Listing associated users!")
+        with open(self.users_file, 'r') as infile:
+            data = infile.read()
+        logging.info(ast.literal_eval(data))
+        users_dict = ast.literal_eval(data)
+        return users_dict
+
+    def _save_user_details(self, info):
+        users = self.get_users()
+        logging.info(users)
+        users[info['username']] = {'email': info['email'], 'password': info['password'],
+        'role': info['role'], 'url': self.url}
+        with open(self.users_file, 'w') as outfile:
+            outfile.write(json.dumps(users))
+        self._save_user_info_in_customers_db(info)
+
+    def _save_user_info_in_customers_db(self, info):
+        logging.info(info)
+        with open(NWS_CUSTOMERS_FILE, 'r') as infile:
+            data = infile.read()
+        logging.info(ast.literal_eval(data))
+        data = ast.literal_eval(data)
+        data[info['email']] = {"username": info['username'], "email": info['email'], "password": info['password'], "url": self.url, "role": info['role'], "created": "False"}
+        with open(NWS_CUSTOMERS_FILE, 'w') as outfile:
+            outfile.write(json.dumps(data))

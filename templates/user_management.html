@@ -5,16 +5,9 @@
 <link rel="stylesheet" href="/static/style.css" type="text/css">
 </head>
 <body>
-<form action="/user_management/{{username}}" method="post" enctype="multipart/form-data">
-<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
-<div class="login-screen">
-<div class="login-form">
+<div class="app-title"><h1>Next-gen Web Services [NWS]<h1><h1>Modify an existing webpage!</h1></div>
 <div class="app-title"><h1>User Management Dashboard</h1></div>
-<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
+<a href = "/list_existing_users/{{username}}"><button class="btn btn-primary btn-large btn-block">List Existing users</button></a><br><br>
 <a href = "/add_users/{{username}}"><button class="btn btn-primary btn-large btn-block">Add users</button></a><br><br>
-<a href = "/remove_users/{{username}}"><button class="btn btn-primary btn-large btn-block">Remove users</button></a><br>
-</div>
-<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div></div>
-</form>
 </body>
 </html>

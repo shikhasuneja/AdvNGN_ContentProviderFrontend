@@ -3,6 +3,7 @@ import json
 import logging
 import ast
 from werkzeug import secure_filename
+from populatedb_api import populate_db
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = "nws_customers.json"
@@ -80,6 +81,7 @@ class UserPage():
         self._save_redundancy_requirements()
         self._save_current_user_details()
         self._save_index_file()
+        self._populate_db()
 
     def _create_folders_and_files(self):
         folders = [NWS_CUSTOMER_PAGES_DIR, self.url_folder, self.index_files_folder]
@@ -94,10 +96,12 @@ class UserPage():
     def _save_user_details(self):
         user = UserAccount(self.user, None, None)
         user_details = user.find_details()
-        admin_details = {"username": self.user, "email": user_details['email'], "password": user_details['password'], "role": "admin", "url":self.url}
+        admin_details = {self.user: {"email": user_details['email'],
+        "password": user_details['password'], "role": "admin", "url":self.url}}
         with open(self.users_file, 'w') as outfile:
             outfile.write(json.dumps(admin_details))
         self._save_current_user_details()
+        self._save_in_customer_db(admin_details)
 
     def _save_redundancy_requirements(self):
         selection_dict = {'aa': "Active_Active", "ab": "Active_Backup"}
@@ -126,3 +130,20 @@ class UserPage():
         version_info = {"url": self.url, "requested_version": 1, "latest_version": 1}
         with open(self.website_version_file, 'w') as outfile:
             outfile.write(json.dumps(version_info))
+
+    def _save_in_customer_db(self, admin):
+        logging.info(admin)
+        with open(NWS_CUSTOMERS_FILE, 'r') as infile:
+            data = infile.read()
+        logging.info(ast.literal_eval(data))
+        data = ast.literal_eval(data)
+        data[admin[self.user]['email']] = {"username": self.user, "email": admin[self.user]['email'],
+        "password": admin[self.user]['password'], "url": self.url, "role": admin[self.user]['role'], "created": "True"}
+        with open(NWS_CUSTOMERS_FILE, 'w') as outfile:
+            outfile.write(json.dumps(data))
+
+    def _populate_db(self):
+        pb = populate_db()
+        user = UserAccount(self.user, None, None)
+        user_details = user.find_details()
+        pb.api_account(user_details['email'])

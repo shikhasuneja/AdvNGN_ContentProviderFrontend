@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Next-gen Web Services [NWS]</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+<body>
+<form action="/add_users/{{username}}" method="post" enctype="multipart/form-data">
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
+<div class="login-screen">
+<div class="login-form">
+<div class="app-title"><h1>User Management Dashboard</h1></div>
+{% if submission_successful %}
+<div class="app-title"><h2>User added successfully!</h2></div>
+{% endif %}
+<div class="app-title"><h2>Add Users</h2></div>
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
+<div class="control-group">Enter Username: <input type="text" name="username" class="login-field"></div><br><br>
+<div class="control-group">Enter Email: <input type="text" name="email" class="login-field"></div><br><br>
+<div class="control-group">Enter Password: <input type="text" name="password" class="login-field"></div><br><br>
+<div class="control-group">Enter Role: <input type="text" name="role" class="login-field"></div><br><br>
+<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div>
+</form>
+</div>
+</body>
+</html>

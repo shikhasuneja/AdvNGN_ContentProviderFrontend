@@ -58,9 +58,7 @@ def modify_webpage(username):
 
 @app.route('/user_management/<username>', methods=['GET', 'POST'])
 def user_management(username):
-    """if request.method == 'POST':
-        page = WebPage(request.form['url'], username)
-        page.modify()"""
+    logging.info("User Management Dashboard")
     return render_template('user_management.html', username = username)
 
 
@@ -90,6 +88,35 @@ def revert_webpage(username):
             reverted = True
         return render_template('revert_webpage.html', username = username, files = files, reverted = reverted)
     return render_template('revert_webpage.html', username = username)
+
+
+@app.route('/add_users/<username>', methods=['GET', 'POST'])
+def add_users(username):
+    submission_successful = False
+    if request.method == 'POST':
+        page = WebPage(request.form['url'], username)
+        page.modify(flag = 0, requested_version = None,
+        user_details = {'username': request.form['username'], 'email': request.form['email'],
+        'password': request.form['password'], 'role': request.form['role']})
+        submission_successful = True
+    return render_template('add_users.html', username = username, submission_successful = submission_successful)
+
+
+@app.route('/list_existing_users/<username>', methods=['GET', 'POST'])
+def list_existing_users(username):
+    if request.method == 'POST':
+        for item in request.form.items():
+            logging.info(item[0])
+            if item[0] == "url":
+                page = WebPage(request.form['url'], username)
+                users = page.get_users()
+                return render_template('list_existing_users.html', username = username, users = users)
+    return render_template('list_existing_users.html', username = username)
+
+
+@app.route('/remove_users/<username>', methods=['GET', 'POST'])
+def remove_users(username):
+    return render_template('remove_users.html', username = username)
 
 
 if __name__ == '__main__':

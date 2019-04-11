@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>Next-gen Web Services [NWS]</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+<body>
+<form action="/list_existing_users/{{username}}" method="post" enctype="multipart/form-data">
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
+<div class="login-screen">
+<div class="login-form">
+<div class="app-title"><h1>User Management Dashboard</h1></div>
+{% if not users %}
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
+<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div>
+{% endif %}
+</form>
+<div class="login-screen">
+{% if users %}
+<div class="control-group"><h2>Existing Users:</h2>
+<div class="bandwidth">
+<table border = 1 align = "center">
+<thead>
+<td><strong>Username</strong></td>
+<td><strong>Email</strong></td>
+<td><strong>Role</strong></td>
+</thead>
+{% for user in users%}
+<tr>
+<td>{{user}}</td>
+<td>{{users[user]['email']}}</td>
+<td>{{users[user]['role']}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
