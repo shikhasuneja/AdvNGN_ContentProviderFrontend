@@ -51,7 +51,7 @@ class populate_db():
                              owner=True
                         else:
                              owner=False
-                        dictforaccountcreation= {"username":"{}".format(j),"password":"{}".format(userD[j]['password']),"url":"{}".format(userD[j]['url']),"email":"{}".format(userD[j]['email']),"owner":"{}".format(owner)}
+                        dictforaccountcreation= {"username":"{}".format(j),"password":"{}".format(userD[j]['password']),"url":"{}".format(userD[j]['url']),"email":"{}".format(userD[j]['email']),"owner":owner}
                         body='account/users'
                         logging.info(body)
                         logging.info(dictforaccountcreation)
