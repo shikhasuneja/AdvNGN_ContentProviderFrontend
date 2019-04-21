@@ -13,7 +13,7 @@
 <div class="app-title"><h2>Webpage reverted successfully!</h2></div>
 {% endif %}
 <div class="login-form">
-<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div>
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field" pattern="^www.[a-z0-9-]+.com$" required/></div>
 {% if files %}
 <div class="control-group">Revert to version:
 <select name="version_selection">

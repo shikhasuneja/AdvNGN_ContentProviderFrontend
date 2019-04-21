@@ -14,7 +14,7 @@
 <div class="app-title"><h2>User added successfully!</h2></div>
 {% endif %}
 <div class="app-title"><h2>Add Users</h2></div>
-<div class="control-group">Enter Url: <input type="text" name="url" class="login-field"></div><br><br>
+<div class="control-group">Enter Url: <input type="text" name="url" class="login-field" pattern="^www.[a-z0-9-]+.com$" required/></div><br><br>
 <div class="control-group">Enter Username: <input type="text" name="username" class="login-field"></div><br><br>
 <div class="control-group">Enter Email: <input type="text" name="email" class="login-field"></div><br><br>
 <div class="control-group">Enter Password: <input type="text" name="password" class="login-field"></div><br><br>
