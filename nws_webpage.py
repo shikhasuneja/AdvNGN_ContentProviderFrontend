@@ -43,12 +43,14 @@ def user_session(username):
 
 @app.route('/create_webpage/<username>', methods=['GET', 'POST'])
 def create_webpage(username):
+    creation_successful = False
     if request.method == 'POST':
         page = UserPage(request.form['url'], username, request.files['file'],
         redundancy = {'replicas' : request.form['replicas'],
         'server_selection': request.form['server_selection']})
         page.create()
-    return render_template('create_webpage.html', username = username)
+        creation_successful = True
+    return render_template('create_webpage.html', username = username, creation_successful = creation_successful)
 
 
 @app.route('/modify_webpage/<username>', methods=['GET', 'POST'])
