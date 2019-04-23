@@ -5,6 +5,7 @@ import ast
 from werkzeug import secure_filename
 from shutil import copyfile
 from populatedb_api import populate_db
+from user import UserAccount, UserPage
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = os.getcwd() + "/nws_customers.json"
@@ -26,13 +27,14 @@ class WebPage():
         self.index_file = index_file
 
     def modify(self, flag, requested_version = None, user_details = {}):
+        user_details = self._save_current_user_details()
         logging.info("Modifying the customer webpage")
         logging.info(MODIFICATION_REASON[flag])
         if MODIFICATION_REASON[flag] == "new_upload":
             logging.info("New \"index.html\" file is uploaded!")
             current_count = self._get_index_files_count()
             self._save_new_index_file(current_count + 1)
-            self._populate_db_with_new_file(user_details, current_count + 1)
+            self._populate_db_with_new_file(user_details, "index_v" + str(current_count + 1) + ".html")
         elif MODIFICATION_REASON[flag] == "user_modification":
             logging.info("User modification")
             logging.info(user_details)
@@ -41,7 +43,7 @@ class WebPage():
             logging.info("Revert Request")
             logging.info(requested_version)
             self._revert_to_specific_version(requested_version)
-            self._populate_db_with_version_info(info)
+            self._populate_db_with_version_info(user_details)
 
     def _save_version_info(self, version):
         version_info = {"url": self.url, "requested_version": version, "latest_version": version}
@@ -109,6 +111,14 @@ class WebPage():
         data[info['email']] = {"username": info['username'], "email": info['email'], "password": info['password'], "url": self.url, "role": info['role'], "created": "False"}
         with open(NWS_CUSTOMERS_FILE, 'w') as outfile:
             outfile.write(json.dumps(data))
+
+    def _save_current_user_details(self):
+        user = UserAccount(self.user, None, None)
+        user_details = user.find_details()
+        details = {"username": self.user, "email": user_details['email'], "password": user_details['password'], "role": user_details['role'], "url":self.url}
+        with open(self.curr_user_file, 'w') as outfile:
+            outfile.write(json.dumps(details))
+        return details
 
     def _populate_db_with_user_info(self, info):
         populate_object.api_account_users(info['email'], info['username'])
