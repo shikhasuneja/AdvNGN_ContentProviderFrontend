@@ -68,7 +68,9 @@ def user_management(username):
 def upload_newindex(username):
     if request.method == 'POST':
         page = WebPage(request.form['url'], username, index_file = request.files['file'])
-        page.modify(flag = 1)
+        error = page.modify(flag = 1)
+        if error:
+            return redirect(url_for('permission_denied'))
     return render_template('upload_newindex.html', username = username)
 
 
@@ -86,7 +88,9 @@ def revert_webpage(username):
                 version_info = True
                 break
         if version_info:
-            page.modify(flag = 2, requested_version = request.form['version_selection'])
+            error = page.modify(flag = 2, requested_version = request.form['version_selection'])
+            if error:
+                return redirect(url_for('permission_denied'))
             reverted = True
         return render_template('revert_webpage.html', username = username, files = files, reverted = reverted)
     return render_template('revert_webpage.html', username = username)
@@ -97,9 +101,11 @@ def add_users(username):
     submission_successful = False
     if request.method == 'POST':
         page = WebPage(request.form['url'], username)
-        page.modify(flag = 0, requested_version = None,
+        error = page.modify(flag = 0, requested_version = None,
         user_details = {'username': request.form['username'], 'email': request.form['email'],
         'password': request.form['password'], 'role': request.form['role']})
+        if error:
+            return redirect(url_for('permission_denied'))
         submission_successful = True
     return render_template('add_users.html', username = username, submission_successful = submission_successful)
 
@@ -119,6 +125,11 @@ def list_existing_users(username):
 @app.route('/remove_users/<username>', methods=['GET', 'POST'])
 def remove_users(username):
     return render_template('remove_users.html', username = username)
+
+
+@app.route('/permission_denied', methods=['GET', 'POST'])
+def permission_denied():
+    return render_template('permission_denied.html')
 
 
 if __name__ == '__main__':

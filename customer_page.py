@@ -28,6 +28,9 @@ class WebPage():
 
     def modify(self, flag, requested_version = None, user_details = {}):
         user_details = self._save_current_user_details()
+        if user_details['role'] != "admin":
+            error = "Permission Denied. \nOnly Users with admin access can modify the webpage!"
+            return error
         logging.info("Modifying the customer webpage")
         logging.info(MODIFICATION_REASON[flag])
         if MODIFICATION_REASON[flag] == "new_upload":
