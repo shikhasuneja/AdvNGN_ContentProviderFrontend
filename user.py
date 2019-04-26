@@ -45,8 +45,12 @@ class UserAccount():
         data = {}
         logging.info(self.email)
         creds = {self.email: {'username': self.username, 'email': self.email, 'password': self.password}}
-        with open(NWS_CUSTOMERS_FILE, 'r') as infile:
-            data = infile.read()
+        if not os.path.exists(NWS_CUSTOMERS_FILE):
+            open(NWS_CUSTOMERS_FILE, 'a').close()
+            return False
+        else:
+            with open(NWS_CUSTOMERS_FILE, 'r') as infile:
+                data = infile.read()
         logging.info(ast.literal_eval(data).items())
         logging.info(ast.literal_eval(data).keys())
         user_data = ast.literal_eval(data)
