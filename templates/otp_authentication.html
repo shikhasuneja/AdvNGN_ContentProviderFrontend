@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>Next-gen Web Services [NWS]</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/style.css" type="text/css">
+</head>
+<body>
+<div class="app-title"> <h1>Next-gen Web Services [NWS]<h1>
+<div class="app-title"><h2>OTP Authentication Page!</h2></div>
+{% if not status%}
+<div class="app-title"><h3>The entered OTP was incorrect, please try again!</h3></div>
+{% endif %}
+<h1>Please enter the OTP received on your email.</h1>
+</div>
+<div class="login-form">
+<form method="post" enctype="multipart/form-data">
+<div class="control-group">Enter the 6-digit OTP: <input type="text" name="otp" class="login-field" pattern="^[0-9]{6}$" required/></div>
+</div>
+<input type="submit" value="Submit" class="btn btn-primary btn-large btn-block"><br></div>
+</form>
+<a href = "/homepage"><button class="btn btn-primary btn-large btn-block">Logout</button></a>
+<br><br>
+</body>
+</html>

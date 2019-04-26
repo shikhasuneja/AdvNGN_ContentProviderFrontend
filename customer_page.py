@@ -6,12 +6,14 @@ from werkzeug import secure_filename
 from shutil import copyfile
 from populatedb_api import populate_db
 from user import UserAccount, UserPage
+from otp import OTP
 
 logging.basicConfig(level=logging.INFO)
 NWS_CUSTOMERS_FILE = os.getcwd() + "/nws_customers.json"
 NWS_CUSTOMER_PAGES_DIR = os.getcwd() + "/nws_urls"
 MODIFICATION_REASON = {0: "user_modification", 1: "new_upload", 2: "revert_request"}
 populate_object = populate_db()
+
 
 class WebPage():
 
@@ -26,10 +28,13 @@ class WebPage():
         self.website_version_file = self.index_files_folder + "/" + "webpage_version.json"
         self.index_file = index_file
 
-    def modify(self, flag, requested_version = None, user_details = {}):
+    def modify(self, flag, requested_version = None, new_user_details = {}, otp_authentication = False):
         user_details = self._save_current_user_details()
         if user_details['role'] != "admin":
-            error = "Permission Denied. \nOnly Users with admin access can modify the webpage!"
+            error = "Permission Denied"
+            return error
+        if not otp_authentication:
+            error = "OTP Authentication Required"
             return error
         logging.info("Modifying the customer webpage")
         logging.info(MODIFICATION_REASON[flag])
@@ -40,8 +45,8 @@ class WebPage():
             self._populate_db_with_new_file(user_details, "index_v" + str(current_count + 1) + ".html")
         elif MODIFICATION_REASON[flag] == "user_modification":
             logging.info("User modification")
-            logging.info(user_details)
-            self._save_user_details(user_details)
+            logging.info(new_user_details)
+            self._save_user_details(ast.literal_eval(new_user_details))
         elif MODIFICATION_REASON[flag] == "revert_request":
             logging.info("Revert Request")
             logging.info(requested_version)
@@ -55,10 +60,9 @@ class WebPage():
 
     def _save_new_index_file(self, version):
         self._save_version_info(version)
-        os.chdir(self.url_folder)
-        self.index_file.save(secure_filename("index.html"))
+        copyfile("temp_index.html", self.url_folder + "/index.html")
         copyfile(self.url_folder + "/index.html", self.index_files_folder + "/index_v" + str(version) + ".html")
-
+        os.remove("temp_index.html")
 
     def _get_index_files_count(self):
         count = 0

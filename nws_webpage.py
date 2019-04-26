@@ -1,11 +1,14 @@
 from flask import Flask, render_template, redirect, url_for, request
-import logging
+import logging, os
 from user import UserAccount, UserPage
 from customer_page import WebPage
+from otp import OTP
+from werkzeug import secure_filename
+from werkzeug.datastructures import FileStorage
+import tempfile, shutil
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level = logging.INFO)
 app = Flask(__name__)
-
 
 @app.route('/')
 def home():
@@ -67,10 +70,14 @@ def user_management(username):
 @app.route('/upload_newindex/<username>', methods=['GET', 'POST'])
 def upload_newindex(username):
     if request.method == 'POST':
-        page = WebPage(request.form['url'], username, index_file = request.files['file'])
+        index_file = request.files['file']
+        FileStorage(index_file).save("temp_index.html")
+        page = WebPage(request.form['url'], username, index_file = index_file)
         error = page.modify(flag = 1)
-        if error:
+        if error == "Permission Denied":
             return redirect(url_for('permission_denied'))
+        if error == "OTP Authentication Required":
+            return redirect(url_for('otp_authentication', url = request.form['url'], username = username, flag = 1))
     return render_template('upload_newindex.html', username = username)
 
 
@@ -88,10 +95,12 @@ def revert_webpage(username):
                 version_info = True
                 break
         if version_info:
-            error = page.modify(flag = 2, requested_version = request.form['version_selection'])
-            if error:
+            requested_version = request.form['version_selection']
+            error = page.modify(flag = 2, requested_version = requested_version)
+            if error == "Permission Denied":
                 return redirect(url_for('permission_denied'))
-            reverted = True
+            if error == "OTP Authentication Required":
+                return redirect(url_for('otp_authentication', url = request.form['url'], username = username, flag = 2, requested_version = requested_version))
         return render_template('revert_webpage.html', username = username, files = files, reverted = reverted)
     return render_template('revert_webpage.html', username = username)
 
@@ -101,11 +110,14 @@ def add_users(username):
     submission_successful = False
     if request.method == 'POST':
         page = WebPage(request.form['url'], username)
+        new_user_details = {'username': request.form['username'], 'email': request.form['email'],
+        'password': request.form['password'], 'role': request.form['role']}
         error = page.modify(flag = 0, requested_version = None,
-        user_details = {'username': request.form['username'], 'email': request.form['email'],
-        'password': request.form['password'], 'role': request.form['role']})
-        if error:
+        new_user_details = new_user_details)
+        if error == "Permission Denied":
             return redirect(url_for('permission_denied'))
+        if error == "OTP Authentication Required":
+            return redirect(url_for('otp_authentication', url = request.form['url'], username = username, flag = 0, new_user_details = new_user_details))
         submission_successful = True
     return render_template('add_users.html', username = username, submission_successful = submission_successful)
 
@@ -130,6 +142,38 @@ def remove_users(username):
 @app.route('/permission_denied', methods=['GET', 'POST'])
 def permission_denied():
     return render_template('permission_denied.html')
+
+
+@app.route('/otp_authentication', methods=['GET', 'POST'])
+def otp_authentication():
+    url = request.args.get('url')
+    username = request.args.get('username')
+    flag = request.args.get('flag')
+    otp = OTP(url)
+    if request.method == 'GET':
+        otp.send_email(username)
+    elif request.method == 'POST':
+        status = otp.match_otp(request.form['otp'])
+        if not status:
+            return render_template('otp_authentication.html', status = status)
+        else:
+            if flag == "0":
+                page = WebPage(url, username)
+                page.modify(flag = 0, requested_version = None,
+                new_user_details = request.args.get('new_user_details'), otp_authentication = True)
+                submission_successful = True
+                return render_template('add_users.html', username = username, submission_successful = submission_successful)
+            elif flag == "1":
+                page = WebPage(url, username)
+                page.modify(flag = 1, otp_authentication = True)
+                submission_successful = True
+                return render_template('upload_newindex.html', username = username, submission_successful = submission_successful)
+            elif flag == "2":
+                page = WebPage(url, username)
+                page.modify(flag = 2, requested_version = request.args.get('requested_version'), otp_authentication = True)
+                reverted = True
+                return render_template('revert_webpage.html', username = username, reverted = reverted)
+    return render_template('otp_authentication.html', status = True)
 
 
 if __name__ == '__main__':

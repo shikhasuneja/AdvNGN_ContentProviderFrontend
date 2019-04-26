@@ -8,6 +8,9 @@
 <form action="/upload_newindex/{{username}}" method="post" enctype="multipart/form-data">
 <div class="app-title"> <h1>Next-gen Web Services [NWS]<h1><br><h1>Modify an existing webpage!</h1></div>
 <div class="login-screen">
+{% if submission_successful %}
+<div class="app-title"><h2>Uploaded the file successfully!</h2></div>
+{% endif %}
 <div class="app-title"><h1>Upload a new "index.html" file</h1></div>
 <div class="login-form">
 <div class="control-group">Enter Url: <input type="text" name="url" class="login-field" pattern="^www.[a-z0-9-]+.com$" required/></div>
